@@ -1,3 +1,6 @@
+
+let path = require('express');
+
 require('dotenv').config()
     let express = require('express');
     let bodyParser = require('body-parser');
@@ -23,7 +26,7 @@ require('dotenv').config()
 
     // create a home route to test if the server works
     app.get('/', function (req, res) {
-      res.send('all grn');
+      res.sendFile(__dirname + '/ola.html');
     });
 
     // create a "save-text" route to update Pusher when a new text is added to the editor

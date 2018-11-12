@@ -3,17 +3,26 @@
         <title>Ola mundo</title>
     </head>
     <body>
+        <div id="tes" style="color:#F5F">Espero que funcione</div>
         <form action="">
             <input type="text" name="data" id="data">
-            <button type="submit">Submit</button>
-            </form>
+            <button type="submit" onclick="sConsole()">Submit</button>
+        </form>
             
             <script>
-                function sConsole() {
-                var data = document.getElementById("data");
-                 console.log(data.value());
-            }
-                sConsole();
+                function testarH1(){
+                    document.body.innerHTML = "<h1>Time right now is: </h1>"
+                }
+                function sConsole() {                
+                 console.log(document.getElementById("data").value);
+                 console.log(2);
+                 document.getElementById('tes').style.backgroundColor = 'blue';
+                 
+                 }
+                
+                 
+               
+
             </script>
 
     </body>

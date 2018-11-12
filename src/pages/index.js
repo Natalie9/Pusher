@@ -36,9 +36,8 @@ class RichEditor extends Component {
     this.notifyPusher = this._notifyPusher.bind(this); // add this line
     this.notifyPusherEditor = this._notifyPusherEditor.bind(this); // add this line
   }
-
   componentWillMount() {
-    this.pusher = new Pusher("79f2a85355b7fa8e1dcb", {
+    this.pusher = new Pusher('YOUR PUSHER KEY', {
       cluster: 'eu',
       encrypted: true
     });
@@ -70,116 +69,112 @@ class RichEditor extends Component {
       self.setState({ editorState: newEditorState })
     });
   }
-
-
-  // handle blockquote
-  _getBlockStyle(block) {
-    switch (block.getType()) {
-      case 'blockquote': return 'RichEditor-blockquote';
-      default: return null;
-    }
-  }
-  // handle key commands
-  _handleKeyCommand(command, editorState) {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
-    if (newState) {
-      this.onChange(newState);
-      return true;
-    }
-    return false;
-  }
-  // map the TAB key to the editor
-  _mapKeyToEditorCommand(e) {
-    if (e.keyCode === 9 /* TAB */) {
-      const newEditorState = RichUtils.onTab(
-        e,
-        this.state.editorState,
-        4, /* maxDepth */
-      );
-      if (newEditorState !== this.state.editorState) {
-        this.onChange(newEditorState);
-      }
-      return;
-    }
-    return getDefaultKeyBinding(e);
-  }
-  // toggle block styles
-  _toggleBlockType(blockType) {
-    this.onChange(
-      RichUtils.toggleBlockType(
-        this.state.editorState,
-        blockType
-      )
-    );
-  }
-  // toggle inline styles
-  _toggleInlineStyle(inlineStyle) {
-    this.onChange(
-      RichUtils.toggleInlineStyle(
-        this.state.editorState,
-        inlineStyle
-      )
-    );
-  }
-  // send the editor's text with axios to the server so it can be broadcasted by Pusher
-  _notifyPusher(text) {
-    axios.post('http://localhost:8000/save-text', { text })
-  }
-
-  // send the editor's current state with axios to the server so it can be broadcasted by Pusher
-  _notifyPusherEditor(editorState) {
-    const selection = editorState.getSelection()
-    let text = convertToRaw(editorState.getCurrentContent())
-    axios.post('http://localhost:8000/editor-text', { text, selection })
-  }
-  render() {
-    const { editorState } = this.state;
-    // If the user changes block type before entering any text, hide the placeholder.
-    let className = 'RichEditor-editor';
-    var contentState = editorState.getCurrentContent();
-    if (!contentState.hasText()) {
-      if (contentState.getBlockMap().first().getType() !== 'unstyled') {
-        className += ' RichEditor-hidePlaceholder';
-      }
-    }
-    return (
-      <div className="container-fluid">
-        <div className="row">
-          <div className="RichEditor-root col-12 col-md-6">
-            {/* render our editor block style controls components */}
-            <BlockStyleControls
-              editorState={editorState}
-              onToggle={this.toggleBlockType}
-            />
-            {/* render our editor's inline style controls components */}
-            <InlineStyleControls
-              editorState={editorState}
-              onToggle={this.toggleInlineStyle}
-            />
-            <div className={className} onClick={this.focus}>
-              {/* render the Editor exposed by Draft.js */}
-              <Editor
-                blockStyleFn={this.getBlockStyle}
-                customStyleMap={styleMap}
-                editorState={editorState}
-                handleKeyCommand={this.handleKeyCommand}
-                keyBindingFn={this.mapKeyToEditorCommand}
-                onChange={this.onChange}
-                placeholder="What's on your mind?"
-                ref="editor"
-                spellCheck={true}
-              />
-            </div>
-          </div>
-          <div className="col-12 col-md-6">
-            {/* render a preview for the text in the editor */}
-            <div dangerouslySetInnerHTML={{ __html: this.state.text }} />
-          </div>
-        </div>
-      </div>
-    );
+// handle blockquote
+_getBlockStyle(block) {
+  switch (block.getType()) {
+    case 'blockquote': return 'RichEditor-blockquote';
+    default: return null;
   }
 }
+// handle key commands
+_handleKeyCommand(command, editorState) {
+  const newState = RichUtils.handleKeyCommand(editorState, command);
+  if (newState) {
+    this.onChange(newState);
+    return true;
+  }
+  return false;
+}
+// map the TAB key to the editor
+_mapKeyToEditorCommand(e) {
+  if (e.keyCode === 9 /* TAB */) {
+    const newEditorState = RichUtils.onTab(
+      e,
+      this.state.editorState,
+      4, /* maxDepth */
+    );
+    if (newEditorState !== this.state.editorState) {
+      this.onChange(newEditorState);
+    }
+    return;
+  }
+  return getDefaultKeyBinding(e);
+}
+// toggle block styles
+_toggleBlockType(blockType) {
+  this.onChange(
+    RichUtils.toggleBlockType(
+      this.state.editorState,
+      blockType
+    )
+  );
+}
+// toggle inline styles
+_toggleInlineStyle(inlineStyle) {
+  this.onChange(
+    RichUtils.toggleInlineStyle(
+      this.state.editorState,
+      inlineStyle
+    )
+  );
+}
+
+_notifyPusher(text) {
+  axios.post('http://localhost:5000/save-text', { text })
+}
+
+// send the editor's current state with axios to the server so it can be broadcasted by Pusher
+_notifyPusherEditor(editorState) {
+  const selection = editorState.getSelection()
+  let text = convertToRaw(editorState.getCurrentContent())
+  axios.post('http://localhost:5000/editor-text', { text, selection })
+}
+render() {
+  const { editorState } = this.state;
+  // If the user changes block type before entering any text, hide the placeholder.
+  let className = 'RichEditor-editor';
+  var contentState = editorState.getCurrentContent();
+  if (!contentState.hasText()) {
+    if (contentState.getBlockMap().first().getType() !== 'unstyled') {
+      className += ' RichEditor-hidePlaceholder';
+    }
+  }
+  return (
+    <div className="container-fluid">
+      <div className="row">
+        <div className="RichEditor-root col-12 col-md-6">
+          {/* render our editor block style controls components */}
+          <BlockStyleControls
+            editorState={editorState}
+            onToggle={this.toggleBlockType}
+          />
+          {/* render our editor's inline style controls components */}
+          <InlineStyleControls
+            editorState={editorState}
+            onToggle={this.toggleInlineStyle}
+          />
+          <div className={className} onClick={this.focus}>
+            {/* render the Editor exposed by Draft.js */}
+            <Editor
+              blockStyleFn={this.getBlockStyle}
+              customStyleMap={styleMap}
+              editorState={editorState}
+              handleKeyCommand={this.handleKeyCommand}
+              keyBindingFn={this.mapKeyToEditorCommand}
+              onChange={this.onChange}
+              placeholder="What's on your mind?"
+              ref="editor"
+              spellCheck={true}
+            />
+          </div>
+        </div>
+        <div className="col-12 col-md-6">
+          {/* render a preview for the text in the editor */}
+          <div dangerouslySetInnerHTML={{ __html: this.state.text }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+}
 export default RichEditor
-
-
